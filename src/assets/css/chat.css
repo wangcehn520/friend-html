@@ -1,0 +1,44 @@
+
+.message {
+    display: flex;
+    align-items: center;
+    margin: 10px 10px;
+}
+
+.self {
+    align-self: flex-end;
+}
+
+.avatar {
+    align-self: flex-start;
+    width: 35px;
+    height: 35px;
+    border-radius: 50%;
+    margin-right: 10px;
+    margin-left: 10px;
+}
+
+.info {
+    display: flex;
+    flex-direction: column;
+    order: 2;
+}
+
+.myInfo {
+    align-self: flex-start;
+}
+
+.text {
+    padding: 10px;
+    border-radius: 10px;
+    background-color: #eee;
+    word-wrap: break-word;
+    word-break: break-all;
+    max-width: 230px; /* 设置文本框的最大宽度 */
+}
+
+
+.self .text {
+    background-color: #0084ff;
+    color: #fff;
+}
