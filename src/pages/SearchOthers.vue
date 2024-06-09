@@ -22,7 +22,7 @@
     <van-cell title="邮箱" is-link :value="user.email" @click="toEdit('email',user.email,'邮箱')"/>
     <van-cell title="创建时间"  :value="user.createTime" @click="toEdit('createTime',user.createTime,'创建时间')"/>
     <div style="margin: 16px;">
-      <van-button v-if="!user.isMe && !user.isFriend" round block type="primary"@click="addFriend(user.id)" style="margin-bottom: 10px">
+      <van-button v-if="!user.isMe && !user.isFriend" round block type="primary"@click="addSureFriend(user.id)" style="margin-bottom: 10px">
         添加加好友
       </van-button>
 
@@ -30,7 +30,7 @@
         私聊
       </van-button>
 
-      <van-button v-if="user.isFriend" round block type="danger" @click="removeFriend(user.id)" >
+      <van-button v-if="user.isFriend" round block type="danger" @click="deleteSureFriend(user.id)" >
         删除好友
       </van-button>
 
@@ -45,11 +45,15 @@ import {useRoute, useRouter} from "vue-router";
 import myAxios from "../plugins/myAxios";
 import {showFailToast} from "vant";
 import {getCurrentUser} from "../services/user";
+import 'vant/lib/index.css';
+
+
 const router =useRouter();
 const route = useRoute();
 const user = ref();
+
 onMounted(async () =>{
-  const res = await myAxios.get('/user/searchOthers/'+route.query.userId)
+  const res = await myAxios.get('/search/searchOthers/'+route.query.userId)
   if (res.code === 0 && res.message === 'ok'){
     console.log(res)
     user.value = res.data;
@@ -61,8 +65,19 @@ onMounted(async () =>{
   }
 
 })
-
-
+const addSureFriend = async (userId) =>{
+  showConfirmDialog({
+    title: '添加',
+    message:
+        '是否添加好友',
+  })
+      .then(() => {
+        addFriend(userId)
+      })
+      .catch(() => {
+        // on cancel
+      });
+}
 
 const addFriend = async (id)=>{
   let currentUser = await getCurrentUser();
@@ -77,23 +92,6 @@ const addFriend = async (id)=>{
   }
 }
 
-
-const removeFriend = async (friendId)=>{
-  console.log(friendId)
-  let currentUser = await getCurrentUser();
-  if (!currentUser){
-    window.location.href = '/user/login'
-  }
-  const res = await myAxios.get("/friend/delete/" + friendId)
-  if (res.code === 0 && res.data === "ok"){
-    showSuccessToast("删除成功");
-    window.location.href = '/friend'
-  }else {
-    showFailToast(res.messasgee);
-  }
-}
-
-
 const chat = (friendId) =>{
   router.push({
     path:"/chat/privateChat",
@@ -101,6 +99,30 @@ const chat = (friendId) =>{
       friendId,
     }
   })
+}
+
+const deleteSureFriend = async (userId) =>{
+  showConfirmDialog({
+    title: '删除',
+    message:
+        '是否删除好友',
+  })
+      .then(() => {
+        removeFriend(userId)
+      })
+      .catch(() => {
+        // on cancel
+      });
+}
+
+const removeFriend = async (friendId)=>{
+  const res = await myAxios.get("/friend/delete/" + friendId)
+  if (res.code === 0 && res.data === "ok"){
+    showSuccessToast("删除成功");
+    window.location.href = '/friend'
+  }else {
+    showFailToast(res.messasgee);
+  }
 }
 
 </script>

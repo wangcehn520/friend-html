@@ -62,13 +62,15 @@
   </div>
 </template>
 
-<script lang="ts" setup>
+<script  setup>
 import {useRouter} from "vue-router";
 import {ImagePreview, showFailToast, showImagePreview, showSuccessToast} from "vant";
 import {ref} from "vue";
 import { onMounted } from 'vue';
 import myAxios from "../plugins/myAxios";
 import {getCurrentUser} from "../services/user";
+import {removeMessageNumber} from "../plugins/MyUtils";
+import {removeCurrentUser} from "../plugins/MyTikenUtils";
 
 const user = ref();
 
@@ -91,7 +93,7 @@ onMounted(async ()=>{
 
 const router = useRouter();
 
-const toEdit = (editKey: string, currentValue: string,editName: string) => {
+const toEdit = (editKey, currentValue,editName) => {
       router.push({
         path: '/users/edit',
         query: {
@@ -106,6 +108,8 @@ const loginOut =async () =>{
    const res =await myAxios.get("/user/loginout");
     if (res.code === 0){
       // router.push('/index');
+      removeMessageNumber();
+      removeCurrentUser();
       window.location.href = '/'
     }
     else {
@@ -113,7 +117,7 @@ const loginOut =async () =>{
     }
     }
 
-const onClick = (editKey: string, currentValue: string) =>{
+const onClick = (editKey, currentValue) =>{
   router.push({
     path:'/users/editAvatarUrl',
     query:{

@@ -3,7 +3,7 @@
     <van-tab title="好友">
       <van-cell title="新朋友" is-link to="/users/friendSonPages" >
         <template #value>
-          <van-badge :content="0" style="margin-right: 25px" >
+          <van-badge v-if="Number(number) !== 0" :content="number"  style="margin-right: 25px" >
             <div class="child" />
           </van-badge>
         </template>
@@ -48,23 +48,25 @@
 <script setup>
 import { ref,onMounted } from 'vue';
 import {useRouter} from "vue-router";
-import {getCurrentUser} from "../services/user";
 import myAxios from "../plugins/myAxios";
-import {showSuccessToast} from "vant";
+import {getMessageNumber,setMessageNumber} from "../plugins/MyUtils";
+import {getCurrentUser} from "../plugins/MyTikenUtils";
 
 const router = useRouter();
 const active = ref(0);
 const activeNames = ref(['1']);
 const friends = ref([]);
-
+let number = getMessageNumber();
 onMounted( async () => {
-  const current = await getCurrentUser();
-  if (!current){
+  if (!getCurrentUser()){
     window.location.href = '/user/login'
     return;
   }
-
-  const res = await myAxios.get("/friend/searchFriends")
+  const response = await myAxios.get("/chat/getNewAddMessage");
+  const res = await myAxios.get("/friend/searchFriends");
+  if (response.code === 0 && response.data !=null){
+    setMessageNumber(response.data);
+  }
   if (res.code === 0 && res.message === 'ok'){
     friends.value = res.data;
   }else {
@@ -89,7 +91,7 @@ const chatFriend = (friendId) =>{
 
 const searchFriend = (userId) =>{
       router.push({
-        path:'/users/searchOthers',
+        path:'/search/searchOthers',
         query: {
           userId,
         }

@@ -69,9 +69,11 @@ import myAxios from "../plugins/myAxios";
 import {showFailToast, showSuccessToast} from "vant";
 import {useRouter} from "vue-router";
 import { ref,onMounted } from 'vue';
+import {getCurrentUser} from "../plugins/MyTikenUtils";
 
 const router = useRouter();
 const postsList = ref([]);
+console.log(getCurrentUser())
 
 onMounted(async ()=>{
  const postsListData = await myAxios.get('/posts/list')
@@ -96,7 +98,7 @@ onMounted(async ()=>{
  */
 const searchOther = ( userId:number) =>{
      router.push({
-      path: '/users/searchOthers',
+      path: '/search/searchOthers',
       query: {
         userId,
       }

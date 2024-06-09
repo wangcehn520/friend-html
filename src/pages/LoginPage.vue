@@ -44,21 +44,22 @@
 import {ref} from "vue";
 import myAxios from "../plugins/myAxios";
 import {showFailToast, showSuccessToast} from "vant";
-import { useGlobalState } from '../plugins/globalState';
+import {setCurrentUser} from "../plugins/MyTikenUtils";
 const userAccount = ref('');
 const userPassword = ref('');
-const { globalVariable, setGlobalVariable } = useGlobalState();
+
+
 const onLogin = async () =>{
   const response=await myAxios.post("/user/login",{
     userAccount:userAccount.value,
     userPassword:userPassword.value,
   })
   if (response.code === 0 && response.data != ''){
+    setCurrentUser(response.data);
     showSuccessToast({
       message:'登录成功',
       closeOnClick: true
     });
-    setGlobalVariable(1);
     window.location.href ='/';
   }else {
     showFailToast('登录失败');

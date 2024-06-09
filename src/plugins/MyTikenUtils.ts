@@ -1,14 +1,15 @@
 import Cookies from 'js-cookie';
+import {UserType} from "../models/user";
 
 
-export function getToken() {
-    return Cookies.get("TokenKey")
+export function getCurrentUser() {
+    return Cookies.get("CurrentUser")
 }
 
-export function setToken(token) {
-    return Cookies.set("TokenKey", token)
+export function setCurrentUser(code) {
+    return Cookies.set("CurrentUser", code)
 }
 
-export function removeToken() {
-    return Cookies.remove("TokenKey")
+export function removeCurrentUser() {
+    return Cookies.remove("CurrentUser")
 }

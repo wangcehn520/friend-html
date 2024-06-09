@@ -87,7 +87,7 @@
 <script setup>
 import {onMounted,ref} from 'vue';
 import myAxios from "../plugins/myAxios";
-import {getCurrentUser} from "../services/user";
+import {getCurrentUser} from "../plugins/MyTikenUtils";
 import {showSuccessToast} from "vant";
 import {useRouter} from "vue-router";
 
@@ -101,13 +101,12 @@ const friendList = ref([]);
  * 获取好友申请
  */
 onMounted(async () => {
-  const current = await getCurrentUser();
-  if (!current){
+
+  if (!getCurrentUser()){
     window.location.href = '/user/login'
   }
   const res = await myAxios.get("/friend/getAddFriendMessage")
   if (res.code === 0 && res.data != null){
-    console.log(res.data)
     userList.value = res.data;
   }
 
@@ -133,7 +132,7 @@ const agree = async (id) => {
   if (res.code === 0 && res.message === 'ok'){
     window.location.reload();
     showSuccessToast("添加成功");
-
+    return;
   }
   showFailToast("操作有误");
 }
@@ -166,10 +165,10 @@ const getSendMessage = async () =>{
  * @param userId
  * @returns {Promise<void>}
  */
-const toUserIndex = async (userId) => {
+const toUserIndex = (userId) => {
   console.log(userId)
   router.push({
-    path:'/users/searchOthers',
+    path:'/search/searchOthers',
     query: {
       userId,
     }

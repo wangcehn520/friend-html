@@ -18,11 +18,12 @@
               icon="like-o"
               type="primary" size="small"
               plain
-              @click="addFriend(user.id)"
-              v-if="!(user.id === currentUser.id)"
+              @click="addSureFriend(user.id)"
+              v-if="!(user.id === currentUser.id) && !(user.isFriend)"
           >
            添加
           </van-button>
+          <span v-if="user.isFriend">已添加</span>
         </template>
         <template #title >
           <span style="margin-left: 15px" v-text="user.username"></span>
@@ -94,19 +95,19 @@ import {showFailToast, showSuccessToast, Toast} from 'vant';
 import myAxios from "../plugins/myAxios";
 import {useRouter} from "vue-router";
 import {getCurrentUser} from "../services/user";
-
+import 'vant/lib/index.css';
 
 const SearchText = ref('');
 const userList = ref([]);
 const postsList = ref([]);
 const router = useRouter();
 let currentUser;
-
-onMounted(async () =>{
+onMounted(async ()=>{
   currentUser = await getCurrentUser();
 })
 
 const onSearch = async (searchText) => {
+
   const res = await myAxios.get("/search/list/" + searchText);
   if (res.code === 0 && res.message === "ok"){
    userList.value = res.data.userList;
@@ -133,7 +134,7 @@ const onCancel = () => {
  */
 const searchOthers = (userId) =>{
   router.push({
-    path: '/users/searchOthers',
+    path: '/search/searchOthers',
     query: {
       userId,
     }
@@ -154,6 +155,7 @@ const searchDetails = (postsId) =>{
 }
 
 const addFriend = async (id)=>{
+  let currentUser = await getCurrentUser();
   if (!currentUser){
     window.location.href = '/user/login'
   }
@@ -168,6 +170,19 @@ const addFriend = async (id)=>{
   }
 }
 
+const addSureFriend = async (userId) =>{
+  showConfirmDialog({
+    title: '添加',
+    message:
+        '是否添加好友',
+  })
+      .then(() => {
+        addFriend(userId)
+      })
+      .catch(() => {
+        // on cancel
+      });
+}
 </script>
 
 <style scoped>

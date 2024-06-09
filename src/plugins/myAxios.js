@@ -2,7 +2,6 @@
 
 
 import axios from "axios";
-import {getToken, setToken} from "./MyTikenUtils.ts";
 
 
 const myAxios=axios.create({
@@ -13,18 +12,16 @@ const myAxios=axios.create({
 myAxios.interceptors.request.use(function (config) {
     // 在发送请求之前做些什么
     console.log("ok")
-
-    if (getToken()){
-        console.log(getToken())
-        config.headers['token'] = getToken();
-
-    // }else {
-    //     if (config.url != '/user/login' && config.url !='/index' ){
-    //         console.log("222")
-    //         window.location.href = '/user/login'
-    //         return false;
-    //     }
-    }
+    // if (getToken()){
+    //     console.log(getToken())
+    //     config.headers['token'] = getToken();
+    // // }else {
+    // //     if (config.url != '/user/login' && config.url !='/index' ){
+    // //         console.log("222")
+    // //         window.location.href = '/user/login'
+    // //         return false;
+    // //     }
+    // }
     return config;
 
 }, function (error) {
@@ -38,9 +35,9 @@ myAxios.interceptors.response.use(function (response) {
     console.log("success")
 
     // 对响应数据做点什么
-    if (response.data.code === 0 && response.data.token !== undefined){
-        setToken(response.data.token)
-    }
+    // if (response.data.code === 0 && response.data.token !== undefined){
+    //     setToken(response.data.token)
+    // }
     return response.data;
 }, function (error) {
     // 超出 2xx 范围的状态码都会触发该函数。

@@ -46,6 +46,7 @@ const onSubmit = async () => {
     [editUser.value.editKey]: editUser.value.currentValue,
   })
    if (res.code === 0){
+
      history.back();
    }
 };

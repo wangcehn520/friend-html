@@ -1,6 +1,5 @@
 
-import {createWebHistory, createRouter} from "vue-router";
-
+import {createWebHistory, createRouter, useRoute} from "vue-router";
 
 const routes = [
     {
@@ -61,7 +60,7 @@ const routes = [
         component: () => import("../pages/RegisterPage.vue")
     },
     {
-        path: '/users/searchOthers',
+        path: '/search/searchOthers',
         title: '他人主页',
         component: () => import("../pages/SearchOthers.vue")
     },

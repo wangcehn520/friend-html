@@ -10,7 +10,7 @@
   <router-view/>
     <van-tabbar router v-model="active" @change="onChange" placeholder>
       <van-tabbar-item to="/" icon="home-o" name="index" >主页</van-tabbar-item>
-      <van-tabbar-item to="/friend" icon="friends-o" name="friend" >伙伴</van-tabbar-item>
+      <van-tabbar-item to="/friend" icon="friends-o" name="friend" :badge=" Number(number)!== 0 ? number:''">伙伴</van-tabbar-item>
       <van-tabbar-item to="/posts" name=""posts>
         <template #icon="props">
           <van-icon name="add-o" size="40" />
@@ -25,15 +25,31 @@
 
 
 <script setup>
-import {ref} from 'vue';
-import { useRouter} from "vue-router";
+import {ref ,watchEffect,onMounted} from 'vue';
+import {useRoute, useRouter} from "vue-router";
 import routes from "../config/router";
+import myAxios from "../plugins/myAxios";
+import {getMessageNumber, setMessageNumber} from "../plugins/MyUtils";
+
 
 
 const router = useRouter();
+const route = useRoute();
 const title = ref('主页');
-let strings =window.location.href.split('/');
-const active = ref(strings[3] === "" ? 'index' : strings[3]);
+let active = ref("index");
+let number;
+
+onMounted(async () =>{
+    const res = await myAxios.get("/chat/getNewAddMessage");
+    if (res.code === 0 && res.data !=null){
+      setMessageNumber(res.data);
+    }
+    number = getMessageNumber();
+
+})
+watchEffect(()=>{
+  active.value = route.path.split('/')[1] ? route.path.split('/')[1] :  "index";
+})
 const onChange = (e) => {
   active.value=e;
 };
@@ -44,6 +60,7 @@ const onClickLeft = () => {
 const onClickRight = () => {
   router.push('/search');
 };
+
 router.beforeEach((to, from) => {
   const toPath = to.path;
   const route = routes.options.routes.find((route) =>{
@@ -56,11 +73,6 @@ router.beforeEach((to, from) => {
   }
 
 })
-
-
-
-
-
 
 </script>
 

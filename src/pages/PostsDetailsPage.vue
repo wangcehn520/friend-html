@@ -57,7 +57,11 @@
           </van-tag>
         </template>
       </van-cell>
-
+      <van-cell v-if="!(meId === 0) || (meId === Number(posts.userId))">
+        <template #value>
+          <van-button plain type="danger" size="small" @click="deleteSure(posts.id)">删除文章</van-button>
+        </template>
+      </van-cell>
     </van-cell-group>
 
     <!-- 操作按钮 -->
@@ -117,9 +121,10 @@
 <script setup>
 import {onMounted, ref} from "vue";
 import {getCurrentUser} from "../services/user";
-import {showFailToast, showSuccessToast} from "vant";
+import {showFailToast, showSuccessToast, showConfirmDialog } from "vant";
 import {useRoute, useRouter} from "vue-router";
 import myAxios from "../plugins/myAxios";
+import 'vant/lib/index.css';
 
 
 let posts =ref({
@@ -144,9 +149,13 @@ let postsId = 0;
 const route = useRoute();
 const router = useRouter();
 let newComment =  '';
-
+let meId = 0;
 
 onMounted(async ()=>{
+  let currentUser = await getCurrentUser();
+  if (currentUser){
+    meId = currentUser.id;
+  }
   postsId = route.query.postsId;
   commentPage.postsId = postsId;
   const postsListData = await myAxios.get('/posts/getById/' + postsId)
@@ -193,19 +202,17 @@ const likeClick= async (postsId) => {
     const postsListData = await myAxios.get('/posts/getById/'+ postsId)
     if (postsListData.code === 0 && postsListData.data.length !== null){
       postsListData.data.tags = JSON.parse(postsListData.data.tags);
-        if (postsListData.data.images !==""){
-          postsListData.data.images = JSON.parse(postsListData.data.images);
-        }
-        posts.value = postsListData.data;
-        isPlain.value =  !posts.isLike;
-    }else {
-      showFailToast('获取失败');
+      if (postsListData.data.images !==""){
+        postsListData.data.images = JSON.parse(postsListData.data.images);
+      }
+      posts.value = postsListData.data;
     }
     showSuccessToast("点赞成功");
 
   }else {
     showFailToast("点赞失败");
   }
+
 }
 
 /**
@@ -241,7 +248,7 @@ const submitComment = async () => {
   commentPage.avatarUrl = currentUser.avatarUrl.includes('http') ? currentUser.avatarUrl : '/image/'+ currentUser.avatarUrl;
   commentPage.comment = newComment;
   comments.value.push(commentPage);
-  this.newComment = '';
+  newComment = '';
 
 
 }
@@ -252,15 +259,51 @@ const submitComment = async () => {
  */
 const searchOthers = (userId) =>{
    router.push({
-    path: '/users/searchOthers',
+    path: '/search/searchOthers',
     query: {
       userId,
     }
   })
 }
+
+const deleteSure = async (postsId) =>{
+  showConfirmDialog({
+    title: '删除',
+    message:
+        '是否删除文章',
+  })
+      .then(() => {
+        deletePosts(postsId)
+      })
+      .catch(() => {
+        // on cancel
+      });
+}
+
+
+
+const deletePosts = async (postsId)=>{
+  const res = await myAxios.get("/posts/delete/" + postsId);
+  if (res.code === 0 && res.message ==="ok"){
+    showSuccessToast({
+      message:"删除成功",
+      closeOnClick:true,
+    });
+    window.location.href ='/';
+    return;
+  }
+  showFailToast({
+    message:res.message,
+    closeOnClick:true,
+  });
+}
+
+
 </script>
 
 <style>
+
+
 .article-content {
   padding: 16px;
   line-height: 1.6;

@@ -169,8 +169,8 @@ function setMessageInnerHTML(innerHTML) {
 #scrollbox {
   display: flex;
   flex-direction: column;
-  height: 500px;
-  width: 370px;
+  height: 76vh;
+  width: 100%;
   overflow-y: scroll;
 }
 .chat-message-list {
@@ -178,16 +178,16 @@ function setMessageInnerHTML(innerHTML) {
   overflow-y: scroll;
 }
 .chat-input {
+  position: sticky;
   display: flex;
   align-items: center;
   padding: 10px;
+
 }
 .chat-input van-field {
   flex: 1;
   margin-right: 10px;
 }
-
-
 
 .container {
   display: flex;
